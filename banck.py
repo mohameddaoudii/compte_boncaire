@@ -1,5 +1,7 @@
 # import tkinter as tk
 import tkinter as tk
+from tkinter import ttk
+from tkinter.messagebox import showinfo
 
 import sqlite3
 
@@ -118,6 +120,86 @@ class homepageemploye(tk.Tk):
             fg="#f4f4f4",
         )
         self.soldlabe.place(x=240, y=370)
+
+        self.btretier = tk.Button(
+            self,
+            text="Retier",
+            font=("", 12, "bold"),
+            bg="#00afef",
+            padx=18,
+            pady=8,
+            fg="#f4f4f4",
+            command=self.retires,
+        )
+        self.btretier.place(x=100, y=430)
+
+    def retires(self):
+        self.destroy()
+        interf = retirer(self.data)
+
+
+class retirer(tk.Tk):
+    def __init__(self, montantexist):
+        super().__init__()
+        self.montantexist = montantexist
+        self.title("Employe")
+        self.geometry("300x300")
+        self.config(bg="#355070")
+        self.title("Retirer L'argent")
+        self.titer = tk.Label(
+            self,
+            text="Retirer L'argent",
+            font=("Arial", 25, "bold"),
+            bg="#355070",
+            fg="#9bf6ff",
+        )
+        self.titer.place(x=20, y=100)
+
+        self.argent = ttk.Label(
+            self,
+            text="La valeur du montant que vous souhaitez retirer",
+            # bg="#355070",
+            background="#355070",
+            foreground="#fff",
+        )
+        self.argent.place(x=20, y=150)
+        self.montant = ttk.Entry(self, width=40)
+        # self.password.config(height=2)
+        self.montant.place(x=20, y=180)
+        self.button = ttk.Button(self, text="retirer", padding=5, command=self.retir)
+        self.button.place(x=20, y=230)
+        self.status = ttk.Label(
+            self, background="#355070", foreground="red", font=("Arial", 14, "bold")
+        )
+        self.status.place(x=20, y=270)
+
+    def retir(self):
+        montant = int(self.montant.get())
+        montex = "SELECT sold FROM client WHERE identifiant = ?"
+        datae = (int(self.montantexist[2]),)
+        cr.execute(montex, datae)
+        resulta = cr.fetchall()
+
+        if len(resulta) >= 1:
+            print(resulta)
+            resulta = int(resulta[0][0])
+
+        if resulta >= montant:
+            re = resulta - int(self.montant.get())
+            self.status.config(text="operation is pass", foreground="blue")
+            sql = "UPDATE client SET sold = ? WHERE identifiant = ? and password = ?"
+            data = (re, int(self.montantexist[2]), int(self.montantexist[3]))
+            print(self.montantexist[2])
+            print(self.montantexist[3])
+
+            cr.execute(sql, data)
+            conn.commit()
+        else:
+            self.status.config(
+                text="this montant is beg to the montant you have",
+                font=("Arial", 10, "bold"),
+                foreground="red",
+            )
 
 
 class employe(tk.Tk):
@@ -294,7 +376,8 @@ class admin(tk.Tk):
         resulta = cr.fetchall()
         if len(resulta) >= 1:
             self.destroy()
-            inter = homepageadmin(resulta[0])
+            # inter =
+            # (resulta[0])
         else:
             # print("you are not existe in banck ")
             self.status.config(text="identifiant or password not correct !!")
